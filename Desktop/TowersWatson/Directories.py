@@ -55,7 +55,7 @@ def genreport(toproot, totsize, alldirs, allfiles, counts):
         for (path, size) in allitems:
             report('{:,}'.format(size).rjust(maxsize), '=>', path)
 
-    reportfile.close()   # flush output now
+    reportfile.close()
 
 
 if __name__ == '__main__':
@@ -75,12 +75,12 @@ if __name__ == '__main__':
     totsize = treesize(toproot, alldirs, allfiles, counts)
     assert counts[0] == len(alldirs) and counts[1] == len(allfiles) 
 
-    # report results
+    # results
     reportname = 'treesize-report-%s.txt' % reportsuffix
     reportfile = open(reportname, mode='w', encoding='utf8')
     genreport(toproot, totsize, alldirs, allfiles, counts)
 
-    # echo report file?
+    # echo file
     if showreport:
         for line in open(reportname, encoding='utf8'):   # show file on standard output
             print(line, end='')                          # by line, else delay?
