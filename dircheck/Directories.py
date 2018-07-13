@@ -2,13 +2,15 @@ import os, sys, heapq
 #Your stuff is borken
 trace  = lambda *pargs, **kargs: None    # or print or report
 error  = lambda *pargs, **kargs: print(*pargs, file=sys.stderr, **kargs)
-report = lambda *pargs, **kargs: print(*pargs, file=reportfile, **kargs)
 prompt = lambda text: input(text + ' ')
+toproot = '/'
+
 def treesize(root, alldirs, allfiles, counts):
+    
 
     sizehere = 0
     try:
-        allhere = os.listdir(root)
+        allhere = os.listdir(toproot)
     except:
         allhere = []
         error('Error accessing dir (skipped):', root)
@@ -33,56 +35,35 @@ def treesize(root, alldirs, allfiles, counts):
             sizehere += subsize
 
         else:
-            error('Unknown file type (skipped):', path)   # fifo, etc.
+            # error('Unknown file type (skipped):', path)   # fifo, etc.
+            continue
 
-    alldirs.append((root, sizehere))
+        alldirs.append((name, sizehere))
     return sizehere
 
-
-def genreport(toproot, totsize, alldirs, allfiles, counts):
-  
-    report('\nTotal size of {}: {:,}'.format(toproot, totsize))
-    report('    in {:,} dirs and {:,} files'.format(*counts))
-
-    for (title, allitems) in [('Directories', alldirs), ('Files', allfiles)]:
-        report('\n%s\n[%s]\n%s\n' % ('-' * 80, title, '-' * 80))
-        
-        allitems.sort(key=lambda pair: pair[1])   # sort by ascend size
-        allitems.reverse()                        # order largest first
-        allitems = heapq.nlargest(5, allitems)
-        
-        maxsize = max(len('{:,}'.format(size)) for (path, size) in allitems)
-        for (path, size) in allitems:
-            report('{:,}'.format(size).rjust(maxsize), '=>', path)
-
-    reportfile.close()
-
+def sizeof_fmt(num, suffix='B'):
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
 
 if __name__ == '__main__':
-    # configure run
-    if len(sys.argv) == 4:
-        toproot, reportsuffix, showreport = sys.argv[1:]
-    else:
-        toproot = prompt('Root directory path?')
-        reportsuffix = prompt('Report filename suffix (empty=use folder name)?')
-        showreport = prompt('Show standard output at the end (true: y or yes)?')
 
-    showreport = showreport.lower() in ['y', 'yes']
-        
     # collect sizes
     alldirs, allfiles = [], []
     counts = [1, 0]
+    tempdic = {}
+   
     totsize = treesize(toproot, alldirs, allfiles, counts)
-    assert counts[0] == len(alldirs) and counts[1] == len(allfiles) 
+    alldirs.sort(key=lambda tup: tup[1], reverse=True)    
+    counter = 0
+   
+    for dir in alldirs:
+        if(counter==5):
+            continue
+        else:
+            tempdic[dir[0]] = sizeof_fmt(dir[1])
+            counter+=1 
 
-    # results
-    reportname = 'treesize-report-%s.txt' % reportsuffix
-    reportfile = open(reportname, mode='w', encoding='utf8')
-    genreport(toproot, totsize, alldirs, allfiles, counts)
-
-    # echo file
-    if showreport:
-        for line in open(reportname, encoding='utf8'):   # show file on standard output
-            print(line, end='')                          # by line, else delay?
-        if sys.platform.startswith('win'):
-            prompt('Press Enter.')   # stay open if Windows click; or isatty()?
+    print(tempdic)
