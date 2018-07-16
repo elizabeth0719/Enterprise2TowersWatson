@@ -1,16 +1,18 @@
-import os, sys, heapq
+import os, sys, heapq, psutil
 #Your stuff is borken
 trace  = lambda *pargs, **kargs: None    # or print or report
 error  = lambda *pargs, **kargs: print(*pargs, file=sys.stderr, **kargs)
 prompt = lambda text: input(text + ' ')
-toproot = '/'
+disks = []
+partCount = 0
+
 
 def treesize(root, alldirs, allfiles, counts):
     
 
     sizehere = 0
     try:
-        allhere = os.listdir(toproot)
+        allhere = os.listdir(root)
     except:
         allhere = []
         error('Error accessing dir (skipped):', root)
@@ -38,7 +40,7 @@ def treesize(root, alldirs, allfiles, counts):
             # error('Unknown file type (skipped):', path)   # fifo, etc.
             continue
 
-        alldirs.append((name, sizehere))
+        alldirs.append((root + " " + name, sizehere))
     return sizehere
 
 def sizeof_fmt(num, suffix='B'):
@@ -54,8 +56,12 @@ if __name__ == '__main__':
     alldirs, allfiles = [], []
     counts = [1, 0]
     tempdic = {}
-   
-    totsize = treesize(toproot, alldirs, allfiles, counts)
+    for part in psutil.disk_partitions(all=False):
+        disks.append(part.device)
+
+    # for disk in disks:
+    #     treesize(disk, alldirs, allfiles, counts)
+    treesize(disks[0], alldirs, allfiles, counts)
     alldirs.sort(key=lambda tup: tup[1], reverse=True)    
     counter = 0
    
