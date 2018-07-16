@@ -59,9 +59,9 @@ if __name__ == '__main__':
     for part in psutil.disk_partitions(all=False):
         disks.append(part.device)
 
-    # for disk in disks:
-    #     treesize(disk, alldirs, allfiles, counts)
-    treesize(disks[0], alldirs, allfiles, counts)
+    for disk in disks:
+        treesize(disk, alldirs, allfiles, counts)
+    # treesize(disks[0], alldirs, allfiles, counts)
     alldirs.sort(key=lambda tup: tup[1], reverse=True)    
     counter = 0
    
