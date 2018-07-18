@@ -1,4 +1,4 @@
-import os, sys, heapq, psutil
+import os, sys, heapq, psutil, platform
 #Your stuff is borken
 trace  = lambda *pargs, **kargs: None    # or print or report
 error  = lambda *pargs, **kargs: print(*pargs, file=sys.stderr, **kargs)
@@ -57,11 +57,14 @@ if __name__ == '__main__':
     counts = [1, 0]
     tempdic = {}
     for part in psutil.disk_partitions(all=False):
-        disks.append(part.device)
-
+        if platform.system == 'Windows':
+            disks.append(part.device)
+        else: 
+            disks.append('.') 
+            
     for disk in disks:
         treesize(disk, alldirs, allfiles, counts)
-    # treesize(disks[0], alldirs, allfiles, counts)
+
     alldirs.sort(key=lambda tup: tup[1], reverse=True)    
     counter = 0
    
