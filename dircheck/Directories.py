@@ -1,7 +1,7 @@
 import os, sys, heapq, psutil, platform
 #Your stuff is borken
 trace  = lambda *pargs, **kargs: None    # or print or report
-#error  = lambda *pargs, **kargs: print(*pargs, file=sys.stderr, **kargs)
+error  = lambda *pargs, **kargs: print(*pargs, file=sys.stderr, **kargs)
 prompt = lambda text: input(text + ' ')
 disks = []
 partCount = 0
@@ -15,7 +15,7 @@ def treesize(root, alldirs, allfiles, counts):
         allhere = os.listdir(root)
     except:
         allhere = []
- #       error('Error accessing dir (skipped):', root)
+        error('Error accessing dir (skipped):', root)
 
     for name in allhere:
         path = os.path.join(root, name)
@@ -37,7 +37,7 @@ def treesize(root, alldirs, allfiles, counts):
             sizehere += subsize
 
         else:
-            # error('Unknown file type (skipped):', path)   # fifo, etc.
+            error('Unknown file type (skipped):', path)   # fifo, etc.
             continue
 
         alldirs.append((root + " " + name, sizehere))
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         if platform.system == 'Windows':
             disks.append(part.device)
         else: 
-            disks.append('.') 
+            disks.append(part.mountpoint) 
             
     for disk in disks:
         treesize(disk, alldirs, allfiles, counts)

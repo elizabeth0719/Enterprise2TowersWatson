@@ -9,6 +9,7 @@ setup(name='dircheck',
       install_requires=[
             'os',
             'systems',
-            'heapq'
+            'heapq',
+            'psutil'
       ],
       zip_safe=False)
