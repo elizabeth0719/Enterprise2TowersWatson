@@ -8,40 +8,24 @@ partCount = 0
 
 
 def treesize(root, alldirs, allfiles, counts):
-    
-
-    sizehere = 0
+    #sizehere = 0
     try:
         allhere = os.listdir(root)
     except:
         allhere = []
         error('Error accessing dir (skipped):', root)
-
+    
+   
     for name in allhere:
-        path = os.path.join(root, name)
-
-        if os.path.islink(path):
-           trace('skipping link:', path) 
-
-        elif os.path.isfile(path):
-            trace('file:', path)
-            counts[1] += 1
-            filesize = os.path.getsize(path)
-            allfiles.append((path, filesize))
-            sizehere += filesize
-            
-        elif os.path.isdir(path):
-            trace('subdir', path)
-            counts[0] += 1
-            subsize = treesize(path, alldirs, allfiles, counts)
-            sizehere += subsize
-
-        else:
-            error('Unknown file type (skipped):', path)   # fifo, etc.
-            continue
-
-        alldirs.append((root + " " + name, sizehere))
-    return sizehere
+        totalsize = 0
+        for path, dirs, files in os.walk(root + name):
+            for f in files:
+                filename = os.path.join(path, f)
+                try:
+                    totalsize += os.path.getsize(filename)
+                except: 
+                    continue
+        alldirs.append((root + " " + name, totalsize))
 
 def sizeof_fmt(num, suffix='B'):
     for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
@@ -76,3 +60,4 @@ if __name__ == '__main__':
             counter+=1 
 
     print(tempdic)
+     
