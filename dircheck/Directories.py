@@ -7,8 +7,9 @@ disks = []
 partCount = 0
 
 
-def treesize(root, alldirs, allfiles, counts):
-    #sizehere = 0
+def treesize(root):
+    alldirs = []
+
     try:
         allhere = os.listdir(root)
     except:
@@ -25,7 +26,10 @@ def treesize(root, alldirs, allfiles, counts):
                     totalsize += os.path.getsize(filename)
                 except: 
                     continue
-        alldirs.append((root + " " + name, totalsize))
+        alldirs.append((root + " " + name, sizeof_fmt(totalsize)))
+        
+    alldirs.sort(key=lambda tup: tup[1], reverse=True) 
+    return alldirs
 
 def sizeof_fmt(num, suffix='B'):
     for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
@@ -36,28 +40,38 @@ def sizeof_fmt(num, suffix='B'):
 
 if __name__ == '__main__':
 
-    # collect sizes
-    alldirs, allfiles = [], []
-    counts = [1, 0]
     tempdic = {}
     for part in psutil.disk_partitions(all=False):
         if platform.system == 'Windows':
             disks.append(part.device)
         else: 
             disks.append(part.mountpoint) 
-            
+
+    dictArrs = []
+
     for disk in disks:
-        treesize(disk, alldirs, allfiles, counts)
+        dictArrs.append(treesize(disk))   
+    
+    dicts = {}
+    for arrs in dictArrs:
+        counter = 0
+        dic = {}
+        for val in arrs:
+            if(counter==5):
+                continue
+            else:
+                dic[val[0]] = val[1]
+                counter+=1
+        dicts[disks[dictArrs.index(arrs)]] = dic
 
-    alldirs.sort(key=lambda tup: tup[1], reverse=True)    
-    counter = 0
-   
-    for dir in alldirs:
-        if(counter==5):
-            continue
-        else:
-            tempdic[dir[0]] = sizeof_fmt(dir[1])
-            counter+=1 
+    print(dicts)
+    # counter = 0
+    # for dir in alldirs:
+    #     if(counter==5):
+    #         continue
+    #     else:
+    #         tempdic[dir[0]] = sizeof_fmt(dir[1])
+    #         counter+=1 
 
-    print(tempdic)
+    # print(tempdic)
      
