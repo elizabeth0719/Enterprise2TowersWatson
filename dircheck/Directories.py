@@ -26,7 +26,7 @@ def treesize(root):
                     totalsize += os.path.getsize(filename)
                 except: 
                     continue
-        alldirs.append((root + " " + name, sizeof_fmt(totalsize)))
+        alldirs.append((name, sizeof_fmt(totalsize)))
         
     alldirs.sort(key=lambda tup: tup[1], reverse=True) 
     return alldirs
@@ -65,13 +65,5 @@ if __name__ == '__main__':
         dicts[disks[dictArrs.index(arrs)]] = dic
 
     print(dicts)
-    # counter = 0
-    # for dir in alldirs:
-    #     if(counter==5):
-    #         continue
-    #     else:
-    #         tempdic[dir[0]] = sizeof_fmt(dir[1])
-    #         counter+=1 
 
-    # print(tempdic)
      
